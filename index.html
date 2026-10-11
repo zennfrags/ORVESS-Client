@@ -1,24 +1,829 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>ORVESS Client</title>
-  <style>
-    body {
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: #0d0d0f;
-      color: #e8e8ea;
-      font-family: system-ui, sans-serif;
-    }
-    h1 { font-weight: 600; letter-spacing: 0.1em; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#0b0b0d">
+<title>ORVESS Client</title>
+<style>
+:root{
+  --bg:#0b0b0d; --panel:#131316; --panel2:#18181c;
+  --line:#26262b; --line2:#33333a;
+  --text:#ececee; --muted:#8e8e97;
+  --accent:#e8e8ec; --ok:#5fb98a; --warn:#d9a441; --err:#d9645f;
+  --r:12px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5}
+body{min-height:100vh}
+button,input,select{font:inherit;color:inherit}
+button{cursor:pointer;background:none;border:0}
+
+.app{display:flex;flex-direction:column;min-height:100vh}
+.sidebar{display:none}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
+.brand{font-weight:700;letter-spacing:.2em;font-size:14px}
+.ver{font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:99px;padding:2px 8px}
+.main{flex:1;width:100%;max-width:960px;margin:0 auto;padding:18px 16px 100px}
+
+.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;background:rgba(11,11,13,.97);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:20}
+.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;font-size:11px;color:var(--muted);transition:color .15s}
+.tabbar button.active{color:var(--text)}
+.ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+
+.view{display:none}
+.view.active{display:block;animation:fade .18s ease}
+@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+
+h1{font-size:22px;font-weight:600;letter-spacing:-.01em}
+h2{font-size:15px;font-weight:600;margin-bottom:10px}
+.sub{color:var(--muted);font-size:13px;margin-top:4px}
+.head{margin-bottom:18px}
+
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.stat .n{font-size:24px;font-weight:600}
+.stat .l{font-size:12px;color:var(--muted);margin-top:2px}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);font-size:14px;font-weight:500;transition:background .15s,border-color .15s}
+.btn:hover{background:#202026}
+.btn.primary{background:var(--accent);color:#0b0b0d;border-color:var(--accent)}
+.btn.primary:hover{background:#fff}
+.btn.danger{color:var(--err)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.btn.block{width:100%}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+
+.dropzone{border:1px dashed var(--line2);border-radius:var(--r);padding:28px 16px;text-align:center;background:var(--panel);margin-bottom:12px}
+.dropzone p{color:var(--muted);font-size:13px;margin:6px 0 14px}
+
+input[type=text],input[type=search],select{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:11px 12px;outline:none;font-size:15px}
+input:focus,select:focus{border-color:#55555e}
+.filters{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
+
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:2px 8px;border-radius:99px;border:1px solid var(--line2);color:var(--muted);white-space:nowrap}
+.badge.ok{color:var(--ok);border-color:#2c4d3d}
+.badge.warn{color:var(--warn);border-color:#57451f}
+.badge.err{color:var(--err);border-color:#573030}
+
+.item{display:flex;justify-content:space-between;gap:10px;align-items:flex-start;padding:12px 0;border-top:1px solid var(--line)}
+.item:first-child{border-top:0}
+.item .t{font-size:14px;word-break:break-word}
+.item .m{font-size:12px;color:var(--muted);margin-top:2px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:13px}
+.kv dt{color:var(--muted)}
+.kv dd{word-break:break-word}
+.empty{text-align:center;color:var(--muted);padding:28px 12px;font-size:13px}
+.note{border-left:2px solid var(--line2);padding:2px 0 2px 12px;color:var(--muted);font-size:13px;margin-bottom:12px}
+pre{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font-size:12px}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,10px);background:var(--accent);color:#0b0b0d;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:90%}
+.toast.show{opacity:1;transform:translate(-50%,0)}
+.hidden{display:none!important}
+
+@media(min-width:860px){
+  .app{flex-direction:row}
+  .topbar,.tabbar{display:none}
+  .sidebar{display:flex;flex-direction:column;width:232px;border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh}
+  .sidebar .brand{padding:0 12px 22px}
+  .sidebar .nav button{display:flex;gap:10px;align-items:center;width:100%;padding:10px 12px;border-radius:9px;color:var(--muted);font-size:14px;margin-bottom:2px}
+  .sidebar .nav button:hover{background:var(--panel)}
+  .sidebar .nav button.active{background:var(--panel2);color:var(--text)}
+  .sidebar .ver{margin:auto 12px 0;align-self:flex-start}
+  .main{padding:32px 32px 48px}
+  .grid{grid-template-columns:repeat(4,1fr)}
+  .filters{grid-template-columns:1fr 200px}
+  .toast{bottom:32px}
+}
+</style>
 </head>
 <body>
-  <h1>ORVESS</h1>
+<div class="app">
+
+  <aside class="sidebar">
+    <div class="brand">ORVESS</div>
+    <div class="nav">
+      <button class="active" data-view="overview"><svg class="ico" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Overview</button>
+      <button data-view="inspector"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Inspector</button>
+      <button data-view="history"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>History</button>
+      <button data-view="about"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>About</button>
+    </div>
+    <span class="ver">Alpha 0.2</span>
+  </aside>
+
+  <header class="topbar">
+    <div class="brand">ORVESS</div>
+    <span class="ver">Alpha 0.2</span>
+  </header>
+
+  <main class="main">
+
+    <!-- OVERVIEW -->
+    <section class="view active" id="view-overview">
+      <div class="head">
+        <h1>Overview</h1>
+        <p class="sub">Inspect Minecraft Bedrock resource packs on your device.</p>
+      </div>
+      <div class="grid">
+        <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Inspections</div></div>
+        <div class="stat"><div class="n" id="statValid">0</div><div class="l">Passed</div></div>
+        <div class="stat"><div class="n" id="statWarn">0</div><div class="l">Warnings</div></div>
+        <div class="stat"><div class="n" id="statErr">0</div><div class="l">Errors</div></div>
+      </div>
+      <div class="card">
+        <h2>Inspect a pack</h2>
+        <p class="sub" style="margin:0 0 12px">Choose a .mcpack or .zip file. It is read on this device only.</p>
+        <button class="btn primary block" data-go="inspector">Open inspector</button>
+      </div>
+      <div class="card">
+        <h2>Recent inspections</h2>
+        <div id="recentList"></div>
+      </div>
+      <p class="note">ORVESS checks the structure of a pack. A pack that passes may still not work in Minecraft.</p>
+    </section>
+
+    <!-- INSPECTOR -->
+    <section class="view" id="view-inspector">
+      <div class="head">
+        <h1>Pack inspector</h1>
+        <p class="sub">Reads the archive and checks its manifest.json.</p>
+      </div>
+
+      <div class="dropzone" id="dropzone">
+        <svg class="ico" viewBox="0 0 24 24" style="width:28px;height:28px;color:var(--muted)"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>
+        <p>Choose a .mcpack or .zip resource pack.<br>Nothing is uploaded anywhere.</p>
+        <button class="btn primary" id="pickBtn">Choose pack file</button>
+        <input type="file" id="fileInput" accept=".mcpack,.zip" class="hidden">
+      </div>
+
+      <div class="card hidden" id="loading">
+        <div class="row"><span class="spinner"></span><span>Reading pack...</span></div>
+      </div>
+
+      <div class="card hidden" id="errorBox">
+        <h2 style="color:var(--err)">Could not inspect this file</h2>
+        <p class="sub" id="errorText"></p>
+      </div>
+
+      <div id="result" class="hidden">
+        <div class="card">
+          <div class="row" style="justify-content:space-between;margin-bottom:12px">
+            <h2 style="margin:0" id="resName">Pack</h2>
+            <span class="badge" id="resBadge">-</span>
+          </div>
+          <dl class="kv" id="resInfo"></dl>
+        </div>
+        <div class="card">
+          <h2>Findings</h2>
+          <div id="findings"></div>
+        </div>
+        <div class="row">
+          <button class="btn primary" id="exportCurrent">Export JSON report</button>
+          <button class="btn" id="inspectAgain">Inspect another</button>
+        </div>
+        <p class="note" style="margin-top:12px">This result was saved to your local history. Passing these checks does not guarantee the pack works in Minecraft.</p>
+      </div>
+    </section>
+
+    <!-- HISTORY -->
+    <section class="view" id="view-history">
+      <div class="head">
+        <h1>History</h1>
+        <p class="sub">Past inspections, stored only in this browser.</p>
+      </div>
+      <div class="filters">
+        <input type="search" id="histSearch" placeholder="Search by name or file">
+        <select id="histFilter">
+          <option value="all">All results</option>
+          <option value="ok">Passed</option>
+          <option value="warn">Warnings</option>
+          <option value="err">Errors</option>
+        </select>
+      </div>
+      <div class="card"><div id="histList"></div></div>
+      <div class="row">
+        <button class="btn" id="exportAll">Export all as JSON</button>
+        <button class="btn danger" id="clearAll">Clear history</button>
+      </div>
+    </section>
+
+    <!-- ABOUT -->
+    <section class="view" id="view-about">
+      <div class="head">
+        <h1>About</h1>
+        <p class="sub">ORVESS Client, Alpha 0.2. An early companion tool for Minecraft Bedrock packs.</p>
+      </div>
+      <div class="card">
+        <h2>What works now</h2>
+        <div class="item"><div class="t">Pack inspection (.mcpack, .zip)</div><span class="badge ok">Working</span></div>
+        <div class="item"><div class="t">manifest.json structure checks</div><span class="badge ok">Working</span></div>
+        <div class="item"><div class="t">Local history, search and filter</div><span class="badge ok">Working</span></div>
+        <div class="item"><div class="t">JSON report export</div><span class="badge ok">Working</span></div>
+      </div>
+      <div class="card">
+        <h2>What a web app cannot do</h2>
+        <div class="item"><div class="t">Install packs into Minecraft</div><span class="badge err">Not possible</span></div>
+        <div class="item"><div class="t">Change graphics or raise FPS</div><span class="badge err">Not possible</span></div>
+        <div class="item"><div class="t">In-game overlay</div><span class="badge err">Not possible</span></div>
+        <div class="item"><div class="t">Replay recording</div><span class="badge warn">Needs research</span></div>
+      </div>
+      <div class="card">
+        <h2>Limitations</h2>
+        <p class="sub">Checks are structural only. They confirm the file is a readable archive with a manifest that follows the expected format. They cannot confirm that a pack renders correctly or is compatible with your Minecraft version.</p>
+      </div>
+      <div class="card">
+        <h2>Privacy</h2>
+        <p class="sub">Pack files are read on your device and never uploaded. History is stored in this browser only, and clearing your browser data removes it.</p>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<nav class="tabbar">
+  <button class="active" data-view="overview"><svg class="ico" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Overview</button>
+  <button data-view="inspector"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Inspector</button>
+  <button data-view="history"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>History</button>
+  <button data-view="about"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>About</button>
+</nav>
+
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(function(){
+"use strict";
+
+var KEY="orvess.history.v1";
+var MAX_HISTORY=200;
+var MAX_BYTES=150*1024*1024;
+var UUID_RE=/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+var SEMVER_RE=/^\d+\.\d+\.\d+$/;
+var current=null;
+var toastTimer=null;
+
+function $(id){return document.getElementById(id);}
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g,function(c){
+    return {"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c];
+  });
+}
+
+function toast(msg){
+  var t=$("toast");
+  t.textContent=msg;
+  t.classList.add("show");
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(function(){t.classList.remove("show");},2600);
+}
+
+function fmtSize(n){
+  if(n<1024)return n+" B";
+  if(n<1048576)return (n/1024).toFixed(1)+" KB";
+  return (n/1048576).toFixed(1)+" MB";
+}
+
+function fmtDate(ts){
+  try{return new Date(ts).toLocaleString();}catch(e){return "";}
+}
+
+function loadHistory(){
+  try{
+    var raw=localStorage.getItem(KEY);
+    var list=raw?JSON.parse(raw):[];
+    return Array.isArray(list)?list:[];
+  }catch(e){return [];}
+}
+
+function saveHistory(list){
+  try{
+    localStorage.setItem(KEY,JSON.stringify(list));
+    return true;
+  }catch(e){
+    toast("Could not save history in this browser.");
+    return false;
+  }
+}
+
+function showView(name){
+  var views=document.querySelectorAll(".view");
+  for(var i=0;i<views.length;i++){
+    views[i].classList.toggle("active",views[i].id==="view-"+name);
+  }
+  var btns=document.querySelectorAll("[data-view]");
+  for(var j=0;j<btns.length;j++){
+    btns[j].classList.toggle("active",btns[j].getAttribute("data-view")===name);
+  }
+  window.scrollTo(0,0);
+}
+
+/* ---------- Manifest checks ---------- */
+
+function validVersion(v){
+  return Array.isArray(v)&&v.length===3&&v.every(function(n){
+    return typeof n==="number"&&n>=0&&Math.floor(n)===n;
+  });
+}
+
+function versionText(v){
+  if(Array.isArray(v))return v.join(".");
+  if(typeof v==="string")return v;
+  return "unknown";
+}
+
+function checkVersionField(label,v,add){
+  if(validVersion(v)){
+    add("ok",label+" is a valid version ("+versionText(v)+").");
+  }else if(typeof v==="string"&&SEMVER_RE.test(v)){
+    add("warn",label+" is written as text ("+v+"). ORVESS cannot confirm this form is accepted for resource packs. The list form [1, 0, 0] is the standard.");
+  }else{
+    add("err",label+" must be a list of three whole numbers, like [1, 0, 0].");
+  }
+}
+
+function analyzeManifest(m,add){
+  var info={name:"Unnamed pack",version:"unknown",uuid:"",types:[]};
+
+  if(m===null||typeof m!=="object"||Array.isArray(m)){
+    add("err","manifest.json must contain a JSON object.");
+    return info;
+  }
+
+  if(m.format_version===undefined){
+    add("err","format_version is missing.");
+  }else if(typeof m.format_version==="number"&&m.format_version>0&&Math.floor(m.format_version)===m.format_version){
+    add("ok","format_version is "+m.format_version+".");
+  }else{
+    add("warn","format_version has an unusual value. It is normally a whole number such as 1 or 2.");
+  }
+
+  var h=m.header;
+  if(h===null||typeof h!=="object"||Array.isArray(h)){
+    add("err","The header section is missing or invalid.");
+  }else{
+    if(typeof h.name==="string"&&h.name.trim()){
+      info.name=h.name.trim();
+      add("ok","Pack name found: "+info.name+".");
+    }else{
+      add("err","header.name is missing or empty.");
+    }
+    if(typeof h.uuid!=="string"||!UUID_RE.test(h.uuid)){
+      add("err","header.uuid is missing or is not a valid UUID.");
+    }else{
+      info.uuid=h.uuid.toLowerCase();
+      add("ok","header.uuid is a valid UUID.");
+    }
+    if(h.version===undefined){
+      add("err","header.version is missing.");
+    }else{
+      info.version=versionText(h.version);
+      checkVersionField("header.version",h.version,add);
+    }
+    if(h.description===undefined){
+      add("warn","header.description is missing. It is optional but recommended.");
+    }else if(typeof h.description!=="string"){
+      add("warn","header.description should be text.");
+    }
+    if(h.min_engine_version!==undefined){
+      if(validVersion(h.min_engine_version)){
+        add("ok","min_engine_version is "+versionText(h.min_engine_version)+".");
+      }else{
+        add("warn","min_engine_version should be a list of three whole numbers.");
+      }
+    }
+  }
+
+  if(!Array.isArray(m.modules)||m.modules.length===0){
+    add("err","modules is missing or empty. A pack needs at least one module.");
+  }else{
+    var seen={};
+    for(var i=0;i<m.modules.length;i++){
+      var mod=m.modules[i];
+      var tag="modules["+i+"]";
+      if(mod===null||typeof mod!=="object"){
+        add("err",tag+" is not a valid object.");
+        continue;
+      }
+      if(typeof mod.type!=="string"){
+        add("err",tag+".type is missing.");
+      }else{
+        info.types.push(mod.type);
+        if(mod.type==="resources"){
+          add("ok",tag+" is a resources module.");
+        }else{
+          add("warn",tag+".type is \""+mod.type+"\", not \"resources\". This may not be a resource pack.");
+        }
+      }
+      if(typeof mod.uuid!=="string"||!UUID_RE.test(mod.uuid)){
+        add("err",tag+".uuid is missing or is not a valid UUID.");
+      }else{
+        var u=mod.uuid.toLowerCase();
+        if(u===info.uuid){
+          add("warn",tag+".uuid is the same as header.uuid. They should be different.");
+        }else if(seen[u]){
+          add("warn",tag+".uuid is used by more than one module.");
+        }
+        seen[u]=true;
+      }
+      if(mod.version===undefined){
+        add("err",tag+".version is missing.");
+      }else{
+        checkVersionField(tag+".version",mod.version,add);
+      }
+    }
+  }
+
+  if(m.dependencies!==undefined){
+    if(!Array.isArray(m.dependencies)){
+      add("warn","dependencies should be a list.");
+    }else{
+      var depBad=false;
+      m.dependencies.forEach(function(d,k){
+        if(d===null||typeof d!=="object"){
+          add("err","dependencies["+k+"] is not a valid object.");
+          depBad=true;
+        }else if(d.uuid!==undefined&&(typeof d.uuid!=="string"||!UUID_RE.test(d.uuid))){
+          add("err","dependencies["+k+"].uuid is not a valid UUID.");
+          depBad=true;
+        }
+      });
+      if(!depBad){
+        add("ok",m.dependencies.length+" dependencies listed. ORVESS cannot check that they exist.");
+      }
+    }
+  }
+
+  return info;
+}
+
+function buildRecord(file,findings,info,fileCount){
+  var errs=0,warns=0;
+  findings.forEach(function(f){
+    if(f.level==="err")errs++;
+    else if(f.level==="warn")warns++;
+  });
+  return {
+    id:Date.now().toString(36)+Math.random().toString(36).slice(2,6),
+    ts:Date.now(),
+    fileName:file.name,
+    fileSize:file.size,
+    packName:info.name,
+    packVersion:info.version,
+    uuid:info.uuid,
+    moduleTypes:info.types,
+    fileCount:fileCount,
+    status:errs?"err":(warns?"warn":"ok"),
+    errors:errs,
+    warnings:warns,
+    findings:findings
+  };
+}
+
+/* ---------- Archive inspection ---------- */
+
+function inspectFile(file){
+  return new Promise(function(resolve,reject){
+    var fname=file.name||"unnamed";
+    if(!/\.(mcpack|zip)$/i.test(fname)){
+      reject(new Error("This is not a .mcpack or .zip file."));return;
+    }
+    if(file.size===0){
+      reject(new Error("The file is empty."));return;
+    }
+    if(file.size>MAX_BYTES){
+      reject(new Error("The file is larger than 150 MB, which is too big to read safely in a phone browser."));return;
+    }
+    if(typeof JSZip==="undefined"){
+      reject(new Error("The zip reading library did not load. Check your internet connection, refresh the page, and try again."));return;
+    }
+
+    JSZip.loadAsync(file).then(function(zip){
+      var findings=[];
+      function add(level,text){findings.push({level:level,text:text});}
+
+      var names=[];
+      zip.forEach(function(path,entry){
+        if(path.indexOf("__MACOSX/")===0)return;
+        if(!entry.dir)names.push(path);
+      });
+      if(names.length===0){
+        reject(new Error("The archive has no files inside."));return;
+      }
+      add("ok","Archive opened. It contains "+names.length+" files.");
+
+      var rootPath=null,nested=[];
+      names.forEach(function(p){
+        var low=p.toLowerCase();
+        if(low==="manifest.json")rootPath=p;
+        else if(/^[^\/]+\/manifest\.json$/.test(low))nested.push(p);
+      });
+
+      var useAt=rootPath;
+      if(useAt){
+        add("ok","manifest.json found at the top level.");
+        if(useAt!=="manifest.json"){
+          add("warn","The manifest file name is \""+useAt+"\". Use lowercase \"manifest.json\" to be safe.");
+        }
+      }else if(nested.length===1){
+        useAt=nested[0];
+        add("warn","manifest.json is inside a folder ("+useAt+"), not at the top level of the archive. Minecraft may not import the pack this way.");
+      }else if(nested.length>1){
+        reject(new Error("Several manifest.json files were found in different folders. This may be a bundle of packs. ORVESS Alpha inspects one pack at a time."));return;
+      }else{
+        reject(new Error("No manifest.json found. A resource pack needs one at the top level."));return;
+      }
+
+      return zip.file(useAt).async("string").then(function(text){
+        if(text.charCodeAt(0)===0xFEFF)text=text.slice(1);
+        var data;
+        try{
+          data=JSON.parse(text);
+        }catch(e){
+          add("err","manifest.json is not valid JSON: "+e.message+" (Comments or trailing commas also cause this.)");
+          resolve(buildRecord(file,findings,{name:"Unnamed pack",version:"unknown",uuid:"",types:[]},names.length));
+          return;
+        }
+        add("ok","manifest.json is valid JSON.");
+        var info=analyzeManifest(data,add);
+
+        var prefix=useAt.slice(0,useAt.length-13).toLowerCase();
+        var hasIcon=names.some(function(p){return p.toLowerCase()===prefix+"pack_icon.png";});
+        if(hasIcon){
+          add("ok","pack_icon.png found.");
+        }else{
+          add("warn","pack_icon.png not found. It is optional, but Minecraft uses it as the pack's picture.");
+        }
+        resolve(buildRecord(file,findings,info,names.length));
+      });
+    }).catch(function(err){
+      reject(new Error("Could not read this file. It may be damaged or not a real zip archive. ("+(err&&err.message?err.message:"unknown error")+")"));
+    });
+  });
+}
+  /* ---------- Display ---------- */
+
+function badgeFor(status){
+  var map={ok:["ok","Passed"],warn:["warn","Warnings"],err:["err","Errors"]};
+  var b=map[status]||["","Unknown"];
+  return '<span class="badge '+b[0]+'">'+b[1]+'</span>';
+}
+
+function levelBadge(level){
+  var map={ok:["ok","OK"],warn:["warn","Warning"],err:["err","Error"]};
+  var b=map[level]||["","Note"];
+  return '<span class="badge '+b[0]+'">'+b[1]+'</span>';
+}
+
+function renderStats(list){
+  var v=0,w=0,e=0;
+  list.forEach(function(r){
+    if(r.status==="ok")v++;
+    else if(r.status==="warn")w++;
+    else if(r.status==="err")e++;
+  });
+  $("statTotal").textContent=list.length;
+  $("statValid").textContent=v;
+  $("statWarn").textContent=w;
+  $("statErr").textContent=e;
+}
+
+function renderRecent(list){
+  var box=$("recentList");
+  if(list.length===0){
+    box.innerHTML='<div class="empty">No inspections yet. Open the inspector to check your first pack.</div>';
+    return;
+  }
+  box.innerHTML=list.slice(0,5).map(function(r){
+    return '<div class="item"><div><div class="t">'+esc(r.packName)+'</div><div class="m">'+esc(r.fileName)+' · '+esc(fmtDate(r.ts))+'</div></div>'+badgeFor(r.status)+'</div>';
+  }).join("");
+}
+
+function renderHistory(list){
+  var q=$("histSearch").value.trim().toLowerCase();
+  var f=$("histFilter").value;
+  var shown=list.filter(function(r){
+    if(f!=="all"&&r.status!==f)return false;
+    if(!q)return true;
+    return (r.packName||"").toLowerCase().indexOf(q)!==-1||(r.fileName||"").toLowerCase().indexOf(q)!==-1;
+  });
+  var box=$("histList");
+  if(list.length===0){
+    box.innerHTML='<div class="empty">No inspections yet.</div>';
+    return;
+  }
+  if(shown.length===0){
+    box.innerHTML='<div class="empty">No inspections match your search.</div>';
+    return;
+  }
+  var btnStyle='style="padding:7px 12px;font-size:13px"';
+  box.innerHTML=shown.map(function(r){
+    return '<div class="item"><div>'+
+      '<div class="t">'+esc(r.packName)+'</div>'+
+      '<div class="m">'+esc(r.fileName)+' · '+esc(fmtSize(r.fileSize))+' · '+esc(fmtDate(r.ts))+'</div>'+
+      '<div class="row" style="margin-top:8px">'+
+      '<button class="btn" '+btnStyle+' data-act="view" data-id="'+esc(r.id)+'">View</button>'+
+      '<button class="btn" '+btnStyle+' data-act="export" data-id="'+esc(r.id)+'">Export</button>'+
+      '<button class="btn danger" '+btnStyle+' data-act="delete" data-id="'+esc(r.id)+'">Delete</button>'+
+      '</div></div>'+badgeFor(r.status)+'</div>';
+  }).join("");
+}
+
+function renderAll(){
+  var list=loadHistory();
+  renderStats(list);
+  renderRecent(list);
+  renderHistory(list);
+}
+
+function showResult(rec){
+  current=rec;
+  $("loading").classList.add("hidden");
+  $("errorBox").classList.add("hidden");
+  $("result").classList.remove("hidden");
+  $("resName").textContent=rec.packName;
+  var badge=$("resBadge");
+  var labels={ok:"Passed",warn:"Warnings",err:"Errors"};
+  badge.className="badge "+rec.status;
+  badge.textContent=labels[rec.status]||"-";
+
+  var rows=[
+    ["File",rec.fileName],
+    ["Size",fmtSize(rec.fileSize)],
+    ["Pack version",rec.packVersion],
+    ["Pack UUID",rec.uuid||"not found"],
+    ["Module types",(rec.moduleTypes&&rec.moduleTypes.length)?rec.moduleTypes.join(", "):"none found"],
+    ["Files inside",String(rec.fileCount)],
+    ["Inspected",fmtDate(rec.ts)],
+    ["Summary",rec.errors+" errors, "+rec.warnings+" warnings"]
+  ];
+  $("resInfo").innerHTML=rows.map(function(r){
+    return "<dt>"+esc(r[0])+"</dt><dd>"+esc(r[1])+"</dd>";
+  }).join("");
+
+  var order={err:0,warn:1,ok:2};
+  var sorted=rec.findings.slice().sort(function(a,b){return order[a.level]-order[b.level];});
+  $("findings").innerHTML=sorted.map(function(f){
+    return '<div class="item"><div class="t">'+esc(f.text)+'</div>'+levelBadge(f.level)+'</div>';
+  }).join("");
+}
+
+function showError(msg){
+  $("loading").classList.add("hidden");
+  $("result").classList.add("hidden");
+  $("errorText").textContent=msg;
+  $("errorBox").classList.remove("hidden");
+}
+
+/* ---------- Export ---------- */
+
+function safeName(s){
+  return String(s).replace(/[^a-z0-9_-]+/gi,"-").replace(/^-+|-+$/g,"").slice(0,40)||"pack";
+}
+
+function download(name,obj){
+  var blob=new Blob([JSON.stringify(obj,null,2)],{type:"application/json"});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement("a");
+  a.href=url;
+  a.download=name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  setTimeout(function(){URL.revokeObjectURL(url);},1000);
+}
+
+function exportOne(rec){
+  download("orvess-report-"+safeName(rec.packName)+".json",{
+    tool:"ORVESS Client",
+    version:"Alpha 0.2",
+    exportedAt:new Date().toISOString(),
+    note:"Structural checks only. A passing result does not guarantee the pack works in Minecraft.",
+    inspection:rec
+  });
+  toast("Report exported. Check your Downloads folder.");
+}
+
+/* ---------- Actions ---------- */
+
+function handleFile(file){
+  if(!file)return;
+  $("result").classList.add("hidden");
+  $("errorBox").classList.add("hidden");
+  $("loading").classList.remove("hidden");
+  $("pickBtn").disabled=true;
+
+  inspectFile(file).then(function(rec){
+    var list=loadHistory();
+    list.unshift(rec);
+    if(list.length>MAX_HISTORY)list=list.slice(0,MAX_HISTORY);
+    saveHistory(list);
+    renderAll();
+    showResult(rec);
+    $("pickBtn").disabled=false;
+  },function(err){
+    showError(err&&err.message?err.message:"Something went wrong.");
+    $("pickBtn").disabled=false;
+  });
+}
+
+function findRecord(id){
+  var list=loadHistory();
+  for(var i=0;i<list.length;i++){
+    if(list[i].id===id)return list[i];
+  }
+  return null;
+}
+
+/* ---------- Wiring ---------- */
+
+var navBtns=document.querySelectorAll("[data-view]");
+for(var n=0;n<navBtns.length;n++){
+  navBtns[n].addEventListener("click",function(){
+    showView(this.getAttribute("data-view"));
+  });
+}
+var goBtns=document.querySelectorAll("[data-go]");
+for(var g=0;g<goBtns.length;g++){
+  goBtns[g].addEventListener("click",function(){
+    showView(this.getAttribute("data-go"));
+  });
+}
+
+$("pickBtn").addEventListener("click",function(){$("fileInput").click();});
+
+$("fileInput").addEventListener("change",function(){
+  var file=this.files&&this.files[0];
+  handleFile(file);
+  this.value="";
+});
+
+$("inspectAgain").addEventListener("click",function(){
+  $("result").classList.add("hidden");
+  window.scrollTo(0,0);
+  $("fileInput").click();
+});
+
+$("exportCurrent").addEventListener("click",function(){
+  if(current)exportOne(current);
+});
+
+$("histSearch").addEventListener("input",function(){renderHistory(loadHistory());});
+$("histFilter").addEventListener("change",function(){renderHistory(loadHistory());});
+
+$("histList").addEventListener("click",function(ev){
+  var btn=ev.target.closest("button[data-act]");
+  if(!btn)return;
+  var id=btn.getAttribute("data-id");
+  var act=btn.getAttribute("data-act");
+  var rec=findRecord(id);
+  if(!rec)return;
+  if(act==="view"){
+    showResult(rec);
+    showView("inspector");
+  }else if(act==="export"){
+    exportOne(rec);
+  }else if(act==="delete"){
+    var list=loadHistory().filter(function(r){return r.id!==id;});
+    saveHistory(list);
+    if(current&&current.id===id){
+      current=null;
+      $("result").classList.add("hidden");
+    }
+    renderAll();
+    toast("Inspection deleted.");
+  }
+});
+
+$("exportAll").addEventListener("click",function(){
+  var list=loadHistory();
+  if(list.length===0){toast("There is no history to export yet.");return;}
+  download("orvess-history.json",{
+    tool:"ORVESS Client",
+    version:"Alpha 0.2",
+    exportedAt:new Date().toISOString(),
+    note:"Structural checks only. A passing result does not guarantee the pack works in Minecraft.",
+    inspections:list
+  });
+  toast("History exported. Check your Downloads folder.");
+});
+
+$("clearAll").addEventListener("click",function(){
+  if(loadHistory().length===0){toast("History is already empty.");return;}
+  if(confirm("Delete all saved inspections from this browser? This cannot be undone.")){
+    saveHistory([]);
+    current=null;
+    $("result").classList.add("hidden");
+    renderAll();
+    toast("History cleared.");
+  }
+});
+
+renderAll();
+
+})();
+</script>
 </body>
 </html>
