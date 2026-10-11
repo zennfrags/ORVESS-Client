@@ -2,54 +2,73 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#0b0b0d">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
 <title>ORVESS Client</title>
 <style>
 :root{
   --bg:#0b0b0d; --panel:#131316; --panel2:#18181c;
   --line:#26262b; --line2:#33333a;
   --text:#ececee; --muted:#8e8e97;
-  --accent:#e8e8ec; --ok:#5fb98a; --warn:#d9a441; --err:#d9645f;
-  --r:12px;
+  --ok:#5fb98a; --warn:#d9a441; --err:#d9645f;
+  --r:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5}
-body{min-height:100vh}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer;background:none;border:0}
 
-.app{display:flex;flex-direction:column;min-height:100vh}
-.sidebar{display:none}
-.topbar{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--line)}
-.brand{font-weight:700;letter-spacing:.2em;font-size:14px}
-.ver{font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:99px;padding:2px 8px}
-.main{flex:1;width:100%;max-width:960px;margin:0 auto;padding:18px 16px 100px}
-
-.tabbar{position:fixed;left:0;right:0;bottom:0;display:flex;background:rgba(11,11,13,.97);border-top:1px solid var(--line);padding-bottom:env(safe-area-inset-bottom);z-index:20}
-.tabbar button{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 4px;font-size:11px;color:var(--muted);transition:color .15s}
-.tabbar button.active{color:var(--text)}
-.ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.wrap{max-width:560px;margin:0 auto;min-height:100vh;padding:env(safe-area-inset-top) 18px env(safe-area-inset-bottom)}
 
 .view{display:none}
-.view.active{display:block;animation:fade .18s ease}
-@keyframes fade{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+.view.active{display:block;animation:fade .2s ease}
+@keyframes fade{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
 
-h1{font-size:22px;font-weight:600;letter-spacing:-.01em}
+/* Home */
+#view-home.active{display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;min-height:100vh;padding:32px 0}
+.home-logo{width:136px;height:136px;border-radius:30px;border:1px solid var(--line);margin-bottom:30px}
+.eyebrow{font-size:12px;letter-spacing:.32em;color:var(--muted);font-weight:600;margin-bottom:10px}
+.greet{font-size:28px;font-weight:600;letter-spacing:-.01em}
+.greet-sub{color:var(--muted);margin-top:4px}
+.home-actions{width:100%;max-width:340px;display:flex;flex-direction:column;gap:12px;margin-top:32px}
+.home-foot{margin-top:44px;max-width:340px}
+.home-foot .ver{display:inline-block;font-size:11px;color:var(--muted);border:1px solid var(--line2);border-radius:99px;padding:2px 10px;margin-bottom:10px}
+.legal{font-size:10.5px;letter-spacing:.04em;color:#5d5d66;text-transform:uppercase;line-height:1.5}
+
+/* Inner screens */
+.inner{padding-bottom:48px}
+.bar{display:flex;align-items:center;gap:12px;padding:16px 0 18px;position:sticky;top:env(safe-area-inset-top);background:var(--bg);z-index:5}
+.back{width:40px;height:40px;border-radius:11px;border:1px solid var(--line2);background:var(--panel2);display:flex;align-items:center;justify-content:center;flex:none}
+.back:active{background:#202026}
+.bar h1{font-size:19px;font-weight:600}
+.ico{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.sub{color:var(--muted);font-size:13px}
+.lead{margin-bottom:16px}
+
 h2{font-size:15px;font-weight:600;margin-bottom:10px}
-.sub{color:var(--muted);font-size:13px;margin-top:4px}
-.head{margin-bottom:18px}
 
+/* Menu rows */
+.link{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;text-align:left;padding:16px;background:var(--panel);border:1px solid var(--line);border-radius:var(--r);margin-bottom:10px;transition:background .15s,border-color .15s}
+.link:active,.link:hover{background:var(--panel2);border-color:var(--line2)}
+.link .t{font-size:15px;font-weight:500}
+.link .m{font-size:12.5px;color:var(--muted);margin-top:2px}
+.chev{color:var(--muted);flex:none}
+
+/* Cards and content */
 .card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
 .stat{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:14px}
 .stat .n{font-size:24px;font-weight:600}
 .stat .l{font-size:12px;color:var(--muted);margin-top:2px}
 
-.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:11px 16px;border-radius:10px;border:1px solid var(--line2);background:var(--panel2);font-size:14px;font-weight:500;transition:background .15s,border-color .15s}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:10px;padding:11px 16px;border-radius:11px;border:1px solid var(--line2);background:var(--panel2);font-size:14px;font-weight:500;transition:background .15s,border-color .15s}
 .btn:hover{background:#202026}
-.btn.primary{background:var(--accent);color:#0b0b0d;border-color:var(--accent)}
+.btn.primary{background:#ececee;color:#0b0b0d;border-color:#ececee}
 .btn.primary:hover{background:#fff}
+.btn.lg{padding:16px 18px;font-size:16px;border-radius:14px}
 .btn.danger{color:var(--err)}
 .btn:disabled{opacity:.45;cursor:not-allowed}
 .btn.block{width:100%}
@@ -58,7 +77,7 @@ h2{font-size:15px;font-weight:600;margin-bottom:10px}
 .dropzone{border:1px dashed var(--line2);border-radius:var(--r);padding:28px 16px;text-align:center;background:var(--panel);margin-bottom:12px}
 .dropzone p{color:var(--muted);font-size:13px;margin:6px 0 14px}
 
-input[type=text],input[type=search],select{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:10px;padding:11px 12px;outline:none;font-size:15px}
+input[type=search],select{width:100%;background:var(--panel2);border:1px solid var(--line2);border-radius:11px;padding:11px 12px;outline:none;font-size:15px}
 input:focus,select:focus{border-color:#55555e}
 .filters{display:grid;grid-template-columns:1fr;gap:8px;margin-bottom:12px}
 
@@ -74,181 +93,169 @@ input:focus,select:focus{border-color:#55555e}
 .kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:13px}
 .kv dt{color:var(--muted)}
 .kv dd{word-break:break-word}
-.empty{text-align:center;color:var(--muted);padding:28px 12px;font-size:13px}
+.empty{text-align:center;color:var(--muted);padding:26px 12px;font-size:13px}
 .note{border-left:2px solid var(--line2);padding:2px 0 2px 12px;color:var(--muted);font-size:13px;margin-bottom:12px}
-pre{background:var(--panel2);border:1px solid var(--line);border-radius:10px;padding:12px;overflow-x:auto;font-size:12px}
+
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
 
-.toast{position:fixed;left:50%;bottom:84px;transform:translate(-50%,10px);background:var(--accent);color:#0b0b0d;padding:10px 16px;border-radius:10px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:90%}
+.toast{position:fixed;left:50%;bottom:calc(28px + env(safe-area-inset-bottom));transform:translate(-50%,10px);background:#ececee;color:#0b0b0d;padding:10px 16px;border-radius:11px;font-size:13px;font-weight:500;opacity:0;pointer-events:none;transition:.2s;z-index:50;max-width:90%;text-align:center}
 .toast.show{opacity:1;transform:translate(-50%,0)}
 .hidden{display:none!important}
-
-@media(min-width:860px){
-  .app{flex-direction:row}
-  .topbar,.tabbar{display:none}
-  .sidebar{display:flex;flex-direction:column;width:232px;border-right:1px solid var(--line);padding:22px 14px;position:sticky;top:0;height:100vh}
-  .sidebar .brand{padding:0 12px 22px}
-  .sidebar .nav button{display:flex;gap:10px;align-items:center;width:100%;padding:10px 12px;border-radius:9px;color:var(--muted);font-size:14px;margin-bottom:2px}
-  .sidebar .nav button:hover{background:var(--panel)}
-  .sidebar .nav button.active{background:var(--panel2);color:var(--text)}
-  .sidebar .ver{margin:auto 12px 0;align-self:flex-start}
-  .main{padding:32px 32px 48px}
-  .grid{grid-template-columns:repeat(4,1fr)}
-  .filters{grid-template-columns:1fr 200px}
-  .toast{bottom:32px}
-}
 </style>
 </head>
 <body>
-<div class="app">
+<div class="wrap">
 
-  <aside class="sidebar">
-    <div class="brand">ORVESS</div>
-    <div class="nav">
-      <button class="active" data-view="overview"><svg class="ico" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Overview</button>
-      <button data-view="inspector"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Inspector</button>
-      <button data-view="history"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>History</button>
-      <button data-view="about"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>About</button>
+  <!-- HOME -->
+  <section class="view active" id="view-home">
+    <img class="home-logo" src="icon-512.png" alt="ORVESS logo">
+    <div class="eyebrow">ORVESS</div>
+    <div class="greet" id="greet">Good evening</div>
+    <div class="greet-sub">Ready to play?</div>
+    <div class="home-actions">
+      <button class="btn primary lg block" id="launchBtn">
+        <svg class="ico" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
+        Launch Minecraft
+      </button>
+      <button class="btn lg block" data-view="settings">
+        <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
+        Settings
+      </button>
     </div>
-    <span class="ver">Alpha 0.2</span>
-  </aside>
+    <div class="home-foot">
+      <span class="ver">ORVESS Alpha 0.2</span>
+      <p class="legal">Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</p>
+    </div>
+  </section>
 
-  <header class="topbar">
-    <div class="brand">ORVESS</div>
-    <span class="ver">Alpha 0.2</span>
-  </header>
+  <!-- SETTINGS -->
+  <section class="view inner" id="view-settings">
+    <div class="bar">
+      <button class="back" data-view="home" aria-label="Back"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1>Settings</h1>
+    </div>
+    <button class="link" data-view="inspector">
+      <div><div class="t">Manage Packs</div><div class="m">Inspect .mcpack and .zip resource packs.</div></div>
+      <svg class="ico chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <button class="link" data-view="history">
+      <div><div class="t">History</div><div class="m">Past inspections, search and export.</div></div>
+      <svg class="ico chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+    <button class="link" data-view="about">
+      <div><div class="t">About</div><div class="m">Version, what works, limitations, privacy.</div></div>
+      <svg class="ico chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
+  </section>
 
-  <main class="main">
+  <!-- INSPECTOR -->
+  <section class="view inner" id="view-inspector">
+    <div class="bar">
+      <button class="back" data-view="settings" aria-label="Back"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1>Manage Packs</h1>
+    </div>
+    <p class="sub lead">Reads the archive and checks its manifest.json.</p>
 
-    <!-- OVERVIEW -->
-    <section class="view active" id="view-overview">
-      <div class="head">
-        <h1>Overview</h1>
-        <p class="sub">Inspect Minecraft Bedrock resource packs on your device.</p>
-      </div>
-      <div class="grid">
-        <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Inspections</div></div>
-        <div class="stat"><div class="n" id="statValid">0</div><div class="l">Passed</div></div>
-        <div class="stat"><div class="n" id="statWarn">0</div><div class="l">Warnings</div></div>
-        <div class="stat"><div class="n" id="statErr">0</div><div class="l">Errors</div></div>
+    <div class="dropzone">
+      <svg class="ico" viewBox="0 0 24 24" style="width:28px;height:28px;color:var(--muted)"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>
+      <p>Choose a .mcpack or .zip resource pack.<br>Nothing is uploaded anywhere.</p>
+      <button class="btn primary" id="pickBtn">Choose pack file</button>
+      <input type="file" id="fileInput" accept=".mcpack,.zip" class="hidden">
+    </div>
+
+    <div class="card hidden" id="loading">
+      <div class="row"><span class="spinner"></span><span>Reading pack...</span></div>
+    </div>
+
+    <div class="card hidden" id="errorBox">
+      <h2 style="color:var(--err)">Could not inspect this file</h2>
+      <p class="sub" id="errorText"></p>
+    </div>
+
+    <div id="result" class="hidden">
+      <div class="card">
+        <div class="row" style="justify-content:space-between;margin-bottom:12px">
+          <h2 style="margin:0" id="resName">Pack</h2>
+          <span class="badge" id="resBadge">-</span>
+        </div>
+        <dl class="kv" id="resInfo"></dl>
       </div>
       <div class="card">
-        <h2>Inspect a pack</h2>
-        <p class="sub" style="margin:0 0 12px">Choose a .mcpack or .zip file. It is read on this device only.</p>
-        <button class="btn primary block" data-go="inspector">Open inspector</button>
+        <h2>Findings</h2>
+        <div id="findings"></div>
       </div>
-      <div class="card">
-        <h2>Recent inspections</h2>
-        <div id="recentList"></div>
-      </div>
-      <p class="note">ORVESS checks the structure of a pack. A pack that passes may still not work in Minecraft.</p>
-    </section>
-
-    <!-- INSPECTOR -->
-    <section class="view" id="view-inspector">
-      <div class="head">
-        <h1>Pack inspector</h1>
-        <p class="sub">Reads the archive and checks its manifest.json.</p>
-      </div>
-
-      <div class="dropzone" id="dropzone">
-        <svg class="ico" viewBox="0 0 24 24" style="width:28px;height:28px;color:var(--muted)"><path d="M12 16V4M7 9l5-5 5 5"/><path d="M4 16v4h16v-4"/></svg>
-        <p>Choose a .mcpack or .zip resource pack.<br>Nothing is uploaded anywhere.</p>
-        <button class="btn primary" id="pickBtn">Choose pack file</button>
-        <input type="file" id="fileInput" accept=".mcpack,.zip" class="hidden">
-      </div>
-
-      <div class="card hidden" id="loading">
-        <div class="row"><span class="spinner"></span><span>Reading pack...</span></div>
-      </div>
-
-      <div class="card hidden" id="errorBox">
-        <h2 style="color:var(--err)">Could not inspect this file</h2>
-        <p class="sub" id="errorText"></p>
-      </div>
-
-      <div id="result" class="hidden">
-        <div class="card">
-          <div class="row" style="justify-content:space-between;margin-bottom:12px">
-            <h2 style="margin:0" id="resName">Pack</h2>
-            <span class="badge" id="resBadge">-</span>
-          </div>
-          <dl class="kv" id="resInfo"></dl>
-        </div>
-        <div class="card">
-          <h2>Findings</h2>
-          <div id="findings"></div>
-        </div>
-        <div class="row">
-          <button class="btn primary" id="exportCurrent">Export JSON report</button>
-          <button class="btn" id="inspectAgain">Inspect another</button>
-        </div>
-        <p class="note" style="margin-top:12px">This result was saved to your local history. Passing these checks does not guarantee the pack works in Minecraft.</p>
-      </div>
-    </section>
-
-    <!-- HISTORY -->
-    <section class="view" id="view-history">
-      <div class="head">
-        <h1>History</h1>
-        <p class="sub">Past inspections, stored only in this browser.</p>
-      </div>
-      <div class="filters">
-        <input type="search" id="histSearch" placeholder="Search by name or file">
-        <select id="histFilter">
-          <option value="all">All results</option>
-          <option value="ok">Passed</option>
-          <option value="warn">Warnings</option>
-          <option value="err">Errors</option>
-        </select>
-      </div>
-      <div class="card"><div id="histList"></div></div>
       <div class="row">
-        <button class="btn" id="exportAll">Export all as JSON</button>
-        <button class="btn danger" id="clearAll">Clear history</button>
+        <button class="btn primary" id="exportCurrent">Export JSON report</button>
+        <button class="btn" id="inspectAgain">Inspect another</button>
       </div>
-    </section>
+      <p class="note" style="margin-top:12px">This result was saved to your local history. Passing these checks does not guarantee the pack works in Minecraft.</p>
+    </div>
+  </section>
 
-    <!-- ABOUT -->
-    <section class="view" id="view-about">
-      <div class="head">
-        <h1>About</h1>
-        <p class="sub">ORVESS Client, Alpha 0.2. An early companion tool for Minecraft Bedrock packs.</p>
-      </div>
-      <div class="card">
-        <h2>What works now</h2>
-        <div class="item"><div class="t">Pack inspection (.mcpack, .zip)</div><span class="badge ok">Working</span></div>
-        <div class="item"><div class="t">manifest.json structure checks</div><span class="badge ok">Working</span></div>
-        <div class="item"><div class="t">Local history, search and filter</div><span class="badge ok">Working</span></div>
-        <div class="item"><div class="t">JSON report export</div><span class="badge ok">Working</span></div>
-      </div>
-      <div class="card">
-        <h2>What a web app cannot do</h2>
-        <div class="item"><div class="t">Install packs into Minecraft</div><span class="badge err">Not possible</span></div>
-        <div class="item"><div class="t">Change graphics or raise FPS</div><span class="badge err">Not possible</span></div>
-        <div class="item"><div class="t">In-game overlay</div><span class="badge err">Not possible</span></div>
-        <div class="item"><div class="t">Replay recording</div><span class="badge warn">Needs research</span></div>
-      </div>
-      <div class="card">
-        <h2>Limitations</h2>
-        <p class="sub">Checks are structural only. They confirm the file is a readable archive with a manifest that follows the expected format. They cannot confirm that a pack renders correctly or is compatible with your Minecraft version.</p>
-      </div>
-      <div class="card">
-        <h2>Privacy</h2>
-        <p class="sub">Pack files are read on your device and never uploaded. History is stored in this browser only, and clearing your browser data removes it.</p>
-      </div>
-    </section>
+  <!-- HISTORY -->
+  <section class="view inner" id="view-history">
+    <div class="bar">
+      <button class="back" data-view="settings" aria-label="Back"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1>History</h1>
+    </div>
+    <div class="grid">
+      <div class="stat"><div class="n" id="statTotal">0</div><div class="l">Inspections</div></div>
+      <div class="stat"><div class="n" id="statValid">0</div><div class="l">Passed</div></div>
+      <div class="stat"><div class="n" id="statWarn">0</div><div class="l">Warnings</div></div>
+      <div class="stat"><div class="n" id="statErr">0</div><div class="l">Errors</div></div>
+    </div>
+    <div class="filters">
+      <input type="search" id="histSearch" placeholder="Search by name or file">
+      <select id="histFilter">
+        <option value="all">All results</option>
+        <option value="ok">Passed</option>
+        <option value="warn">Warnings</option>
+        <option value="err">Errors</option>
+      </select>
+    </div>
+    <div class="card"><div id="histList"></div></div>
+    <div class="row">
+      <button class="btn" id="exportAll">Export all as JSON</button>
+      <button class="btn danger" id="clearAll">Clear history</button>
+    </div>
+    <p class="sub" style="margin-top:12px">History is stored only in this browser or app.</p>
+  </section>
 
-  </main>
+  <!-- ABOUT -->
+  <section class="view inner" id="view-about">
+    <div class="bar">
+      <button class="back" data-view="settings" aria-label="Back"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1>About</h1>
+    </div>
+    <p class="sub lead">ORVESS Client, Alpha 0.2. An early companion tool for Minecraft Bedrock.</p>
+    <div class="card">
+      <h2>What works now</h2>
+      <div class="item"><div class="t">Pack inspection (.mcpack, .zip)</div><span class="badge ok">Working</span></div>
+      <div class="item"><div class="t">manifest.json structure checks</div><span class="badge ok">Working</span></div>
+      <div class="item"><div class="t">Local history, search and filter</div><span class="badge ok">Working</span></div>
+      <div class="item"><div class="t">JSON report export</div><span class="badge ok">Working</span></div>
+      <div class="item"><div class="t">Launch button (opens installed Minecraft)</div><span class="badge warn">Needs testing</span></div>
+    </div>
+    <div class="card">
+      <h2>What this app cannot do</h2>
+      <div class="item"><div class="t">Install packs into Minecraft</div><span class="badge err">Not possible</span></div>
+      <div class="item"><div class="t">Change graphics or raise FPS</div><span class="badge err">Not possible</span></div>
+      <div class="item"><div class="t">In-game overlay or HUD</div><span class="badge err">Not possible</span></div>
+      <div class="item"><div class="t">Replay recording</div><span class="badge warn">Needs research</span></div>
+    </div>
+    <div class="card">
+      <h2>Limitations</h2>
+      <p class="sub">Checks are structural only. They confirm the file is a readable archive with a manifest that follows the expected format. They cannot confirm that a pack renders correctly or works with your Minecraft version.</p>
+    </div>
+    <div class="card">
+      <h2>Privacy</h2>
+      <p class="sub">Pack files are read on your device and never uploaded. History is stored on this device only, and clearing your browser or app data removes it.</p>
+    </div>
+    <p class="legal" style="text-align:center">Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</p>
+  </section>
+
 </div>
-
-<nav class="tabbar">
-  <button class="active" data-view="overview"><svg class="ico" viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>Overview</button>
-  <button data-view="inspector"><svg class="ico" viewBox="0 0 24 24"><circle cx="11" cy="11" r="7"/><path d="M21 21l-4.3-4.3"/></svg>Inspector</button>
-  <button data-view="history"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>History</button>
-  <button data-view="about"><svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 8h.01"/></svg>About</button>
-</nav>
 
 <div class="toast" id="toast"></div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -277,7 +284,7 @@ function toast(msg){
   t.textContent=msg;
   t.classList.add("show");
   clearTimeout(toastTimer);
-  toastTimer=setTimeout(function(){t.classList.remove("show");},2600);
+  toastTimer=setTimeout(function(){t.classList.remove("show");},3200);
 }
 
 function fmtSize(n){
@@ -303,21 +310,9 @@ function saveHistory(list){
     localStorage.setItem(KEY,JSON.stringify(list));
     return true;
   }catch(e){
-    toast("Could not save history in this browser.");
+    toast("Could not save history on this device.");
     return false;
   }
-}
-
-function showView(name){
-  var views=document.querySelectorAll(".view");
-  for(var i=0;i<views.length;i++){
-    views[i].classList.toggle("active",views[i].id==="view-"+name);
-  }
-  var btns=document.querySelectorAll("[data-view]");
-  for(var j=0;j<btns.length;j++){
-    btns[j].classList.toggle("active",btns[j].getAttribute("data-view")===name);
-  }
-  window.scrollTo(0,0);
 }
 
 /* ---------- Manifest checks ---------- */
@@ -494,7 +489,7 @@ function inspectFile(file){
       reject(new Error("The file is empty."));return;
     }
     if(file.size>MAX_BYTES){
-      reject(new Error("The file is larger than 150 MB, which is too big to read safely in a phone browser."));return;
+      reject(new Error("The file is larger than 150 MB, which is too big to read safely on a phone."));return;
     }
     if(typeof JSZip==="undefined"){
       reject(new Error("The zip reading library did not load. Check your internet connection, refresh the page, and try again."));return;
@@ -590,17 +585,6 @@ function renderStats(list){
   $("statErr").textContent=e;
 }
 
-function renderRecent(list){
-  var box=$("recentList");
-  if(list.length===0){
-    box.innerHTML='<div class="empty">No inspections yet. Open the inspector to check your first pack.</div>';
-    return;
-  }
-  box.innerHTML=list.slice(0,5).map(function(r){
-    return '<div class="item"><div><div class="t">'+esc(r.packName)+'</div><div class="m">'+esc(r.fileName)+' · '+esc(fmtDate(r.ts))+'</div></div>'+badgeFor(r.status)+'</div>';
-  }).join("");
-}
-
 function renderHistory(list){
   var q=$("histSearch").value.trim().toLowerCase();
   var f=$("histFilter").value;
@@ -611,7 +595,7 @@ function renderHistory(list){
   });
   var box=$("histList");
   if(list.length===0){
-    box.innerHTML='<div class="empty">No inspections yet.</div>';
+    box.innerHTML='<div class="empty">No inspections yet. Open Manage Packs to check your first pack.</div>';
     return;
   }
   if(shown.length===0){
@@ -634,8 +618,15 @@ function renderHistory(list){
 function renderAll(){
   var list=loadHistory();
   renderStats(list);
-  renderRecent(list);
   renderHistory(list);
+}
+
+function showView(name){
+  var views=document.querySelectorAll(".view");
+  for(var i=0;i<views.length;i++){
+    views[i].classList.toggle("active",views[i].id==="view-"+name);
+  }
+  window.scrollTo(0,0);
 }
 
 function showResult(rec){
@@ -737,6 +728,16 @@ function findRecord(id){
   return null;
 }
 
+function setGreeting(){
+  var h=new Date().getHours();
+  var g="Good evening";
+  if(h>=5&&h<12)g="Good morning";
+  else if(h>=12&&h<17)g="Good afternoon";
+  else if(h>=17&&h<22)g="Good evening";
+  else g="Good night";
+  $("greet").textContent=g;
+}
+
 /* ---------- Wiring ---------- */
 
 var navBtns=document.querySelectorAll("[data-view]");
@@ -745,12 +746,13 @@ for(var n=0;n<navBtns.length;n++){
     showView(this.getAttribute("data-view"));
   });
 }
-var goBtns=document.querySelectorAll("[data-go]");
-for(var g=0;g<goBtns.length;g++){
-  goBtns[g].addEventListener("click",function(){
-    showView(this.getAttribute("data-go"));
-  });
-}
+
+$("launchBtn").addEventListener("click",function(){
+  toast("Trying to open Minecraft. If nothing happens, Minecraft may not be installed or this browser blocked it.");
+  setTimeout(function(){
+    window.location.href="intent://#Intent;package=com.mojang.minecraftpe;end";
+  },700);
+});
 
 $("pickBtn").addEventListener("click",function(){$("fileInput").click();});
 
@@ -812,7 +814,7 @@ $("exportAll").addEventListener("click",function(){
 
 $("clearAll").addEventListener("click",function(){
   if(loadHistory().length===0){toast("History is already empty.");return;}
-  if(confirm("Delete all saved inspections from this browser? This cannot be undone.")){
+  if(confirm("Delete all saved inspections from this device? This cannot be undone.")){
     saveHistory([]);
     current=null;
     $("result").classList.add("hidden");
@@ -821,9 +823,17 @@ $("clearAll").addEventListener("click",function(){
   }
 });
 
+setGreeting();
 renderAll();
 
 })();
+</script>
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", function () {
+    navigator.serviceWorker.register("./sw.js").catch(function () {});
+  });
+}
 </script>
 </body>
 </html>
