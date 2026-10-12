@@ -747,11 +747,9 @@ for(var n=0;n<navBtns.length;n++){
   });
 }
 
-$("launchBtn").addEventListener("click",function(){
-  toast("Trying to open Minecraft. If nothing happens, Minecraft may not be installed or this browser blocked it.");
-  setTimeout(function(){
-    window.location.href="intent://#Intent;package=com.mojang.minecraftpe;end";
-  },700);
+$("launchBtn").addEventListener("click", function () {
+  window.location.href =
+    "intent://#Intent;scheme=minecraft;package=com.mojang.minecraftpe;end";
 });
 
 $("pickBtn").addEventListener("click",function(){$("fileInput").click();});
