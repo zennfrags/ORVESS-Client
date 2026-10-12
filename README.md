@@ -1,20 +1,30 @@
-# ORVESS Client — Alpha 0.3 working project
+# ORVESS Client — Alpha 0.4
 
-This is a web app/PWA project, not an installable Android APK. The uploaded file had a ZIP archive containing HTML, CSS, JavaScript, icons and a service worker.
+This is a web app/PWA project, not an installable Android APK or a native injected Minecraft client.
 
-## Changes in this update
-- Added conservative ZIP archive checks: maximum 5,000 files, maximum 300 MB declared expanded size, and maximum 100 MB per individual file.
-- Improved the error message when JSZip cannot load.
-- Bumped the service-worker cache name so browsers can replace the old app shell.
+## Alpha 0.4 additions
+- Added a Modules screen accessible from Home and Settings.
+- Added persistent local preferences for Floating Menu, Crosshair Tools, FPS HUD and Armor HUD.
+- Added explicit status labels to distinguish planned modules from implemented features.
+- Added user-facing notices explaining that these preference toggles do not activate features inside Minecraft yet.
+- Preserved the resource-pack inspector, history, search/filter, JSON export and Minecraft launch button.
+- Updated the service-worker cache version.
 
-## Known limitation
-JSZip is still loaded from a CDN in `index.html`. Therefore, first-time pack inspection needs internet, and pack inspection may fail offline if the library was not cached. Do not claim fully offline pack inspection yet. Bundle a reviewed local copy of JSZip in a later step.
+## Current limitations
+- Floating Menu is a UI preference only; a true Android overlay requires a native Android host and user-granted overlay permission.
+- Crosshair Tools, FPS HUD and Armor HUD are not connected to Minecraft gameplay.
+- The Minecraft launch button opens the installed Bedrock app using an Android intent, but the browser cannot reliably confirm whether the game successfully launched.
+- JSZip is loaded from a CDN, so first-time pack inspection requires internet and offline inspection is not guaranteed.
+- Pack inspection is structural and does not guarantee compatibility with Minecraft.
 
 ## Use from an Android phone
-1. Extract this ZIP using your file manager or an archive app.
-2. Edit `index.html` and `sw.js` in Acode or another text editor.
-3. To test the PWA/service worker, host the folder on HTTPS (for example, GitHub Pages). Opening `index.html` directly from local storage may not enable service-worker features.
-4. After publishing changes, refresh the page. If an old version persists, clear that site's data or unregister its service worker, then reload.
+1. Keep a backup of the previous project.
+2. Extract this ZIP.
+3. Open `index.html`, `sw.js` and other files in Acode to inspect or edit them.
+4. To test PWA and service-worker behavior, host the folder on HTTPS (for example, GitHub Pages). Opening `index.html` directly from local storage may not enable all PWA features.
+5. Open the Modules screen and toggle a preference. Leave and return to the screen or reopen the app to check that the setting persists.
 
-## Safety note
-Archive size checks use ZIP metadata supplied by JSZip. They are a useful guardrail, not a complete security audit. Only inspect files you trust, and test large archives carefully on a phone.
+## Archive inspection safeguards
+The inspector applies limits to archive size, file count and declared uncompressed sizes. These are guardrails, not a complete security audit. Inspect only files you trust.
+
+Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.

@@ -15,6 +15,7 @@
   --text:#ececee; --muted:#8e8e97;
   --ok:#5fb98a; --warn:#d9a441; --err:#d9645f;
   --r:14px;
+  --accent:#d9d9df;
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 html,body{background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;font-size:15px;line-height:1.5}
@@ -95,6 +96,18 @@ input:focus,select:focus{border-color:#55555e}
 .kv dd{word-break:break-word}
 .empty{text-align:center;color:var(--muted);padding:26px 12px;font-size:13px}
 .note{border-left:2px solid var(--line2);padding:2px 0 2px 12px;color:var(--muted);font-size:13px;margin-bottom:12px}
+.module-row{display:flex;align-items:flex-start;gap:12px;padding:14px 0;border-top:1px solid var(--line)}
+.module-row:first-child{border-top:0;padding-top:0}
+.module-main{flex:1;min-width:0}
+.module-title{font-size:14px;font-weight:600}
+.module-desc{font-size:12px;color:var(--muted);margin-top:3px}
+.module-actions{display:flex;flex-direction:column;align-items:flex-end;gap:7px;flex:none}
+.switch{position:relative;width:46px;height:27px;border:1px solid var(--line2);border-radius:99px;background:#222228;padding:3px;display:flex;align-items:center;transition:.15s}
+.switch::after{content:"";display:block;width:19px;height:19px;border-radius:50%;background:#8e8e97;transition:transform .15s,background .15s}
+.switch[aria-checked="true"]{background:#d9d9df;border-color:#d9d9df}
+.switch[aria-checked="true"]::after{background:#0b0b0d;transform:translateX(19px)}
+.switch:focus-visible{outline:2px solid #a8a8b0;outline-offset:3px}
+.module-foot{font-size:11px;color:var(--muted);margin-top:12px}
 
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--line2);border-top-color:var(--text);border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -118,15 +131,37 @@ input:focus,select:focus{border-color:#55555e}
         <svg class="ico" viewBox="0 0 24 24"><path d="M14 4h6v6"/><path d="M20 4l-9 9"/><path d="M18 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1h5"/></svg>
         Launch Minecraft
       </button>
+      <button class="btn lg block" data-view="modules">
+        <svg class="ico" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Modules
+      </button>
       <button class="btn lg block" data-view="settings">
         <svg class="ico" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg>
         Settings
       </button>
     </div>
     <div class="home-foot">
-      <span class="ver">ORVESS Alpha 0.2</span>
+      <span class="ver">ORVESS Alpha 0.4</span>
       <p class="legal">Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.</p>
     </div>
+  </section>
+
+  <!-- MODULES -->
+  <section class="view inner" id="view-modules">
+    <div class="bar">
+      <button class="back" data-view="home" aria-label="Back"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
+      <h1>Modules</h1>
+    </div>
+    <p class="sub lead">Configure ORVESS feature preferences. A saved toggle is not proof that a feature is active inside Minecraft.</p>
+    <div class="card">
+      <h2>Client tools</h2>
+      <div id="moduleList"></div>
+      <p class="module-foot">Settings are saved on this device in this browser/app. Planned modules will not affect Minecraft until the required integration is implemented.</p>
+    </div>
+    <button class="link" data-view="inspector">
+      <div><div class="t">Resource Pack Inspector</div><div class="m">Available now · Inspect .mcpack and .zip files.</div></div>
+      <span class="badge ok">Available</span>
+    </button>
   </section>
 
   <!-- SETTINGS -->
@@ -135,6 +170,10 @@ input:focus,select:focus{border-color:#55555e}
       <button class="back" data-view="home" aria-label="Back"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
       <h1>Settings</h1>
     </div>
+    <button class="link" data-view="modules">
+      <div><div class="t">Modules</div><div class="m">Manage feature preferences and compatibility status.</div></div>
+      <svg class="ico chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
+    </button>
     <button class="link" data-view="inspector">
       <div><div class="t">Manage Packs</div><div class="m">Inspect .mcpack and .zip resource packs.</div></div>
       <svg class="ico chev" viewBox="0 0 24 24"><path d="M9 18l6-6-6-6"/></svg>
@@ -228,20 +267,22 @@ input:focus,select:focus{border-color:#55555e}
       <button class="back" data-view="settings" aria-label="Back"><svg class="ico" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></svg></button>
       <h1>About</h1>
     </div>
-    <p class="sub lead">ORVESS Client, Alpha 0.2. An early companion tool for Minecraft Bedrock.</p>
+    <p class="sub lead">ORVESS Client, Alpha 0.4. An early companion tool for Minecraft Bedrock.</p>
     <div class="card">
       <h2>What works now</h2>
       <div class="item"><div class="t">Pack inspection (.mcpack, .zip)</div><span class="badge ok">Working</span></div>
       <div class="item"><div class="t">manifest.json structure checks</div><span class="badge ok">Working</span></div>
       <div class="item"><div class="t">Local history, search and filter</div><span class="badge ok">Working</span></div>
       <div class="item"><div class="t">JSON report export</div><span class="badge ok">Working</span></div>
-      <div class="item"><div class="t">Launch button (opens installed Minecraft)</div><span class="badge warn">Needs testing</span></div>
+      <div class="item"><div class="t">Launch button (opens installed Minecraft)</div><span class="badge ok">Verified by user</span></div>
+      <div class="item"><div class="t">Saved module preferences</div><span class="badge ok">Implemented</span></div>
     </div>
     <div class="card">
       <h2>What this app cannot do</h2>
       <div class="item"><div class="t">Install packs into Minecraft</div><span class="badge err">Not possible</span></div>
       <div class="item"><div class="t">Change graphics or raise FPS</div><span class="badge err">Not possible</span></div>
-      <div class="item"><div class="t">In-game overlay or HUD</div><span class="badge err">Not possible</span></div>
+      <div class="item"><div class="t">Native floating overlay</div><span class="badge warn">Not implemented</span></div>
+      <div class="item"><div class="t">In-game HUD / live game data</div><span class="badge err">Not implemented</span></div>
       <div class="item"><div class="t">Replay recording</div><span class="badge warn">Needs research</span></div>
     </div>
     <div class="card">
@@ -760,6 +801,43 @@ function setGreeting(){
   $("greet").textContent=g;
 }
 
+/* ---------- Module preferences ---------- */
+var MODULE_KEY="orvess.modules.v1";
+var MODULES=[
+  {id:"floatingMenu",name:"Floating Menu",desc:"A future Android overlay menu above Minecraft.",status:"Planned",kind:"warn",defaultOn:false},
+  {id:"crosshair",name:"Crosshair Tools",desc:"Crosshair preferences for a future supported game integration.",status:"Planned",kind:"warn",defaultOn:false},
+  {id:"fpsHud",name:"FPS HUD",desc:"In-game frame-rate display; needs a compatible integration.",status:"Planned",kind:"warn",defaultOn:false},
+  {id:"armorHud",name:"Armor HUD",desc:"Live armor information requires access to game state.",status:"Needs integration",kind:"err",defaultOn:false}
+];
+function loadModulePrefs(){
+  try{var v=JSON.parse(localStorage.getItem(MODULE_KEY)||"{}");return v&&typeof v==="object"?v:{};}catch(e){return {};}
+}
+function saveModulePrefs(prefs){
+  try{localStorage.setItem(MODULE_KEY,JSON.stringify(prefs));return true;}
+  catch(e){toast("Could not save module settings on this device.");return false;}
+}
+function renderModules(){
+  var prefs=loadModulePrefs();
+  var target=$("moduleList");
+  if(!target)return;
+  target.innerHTML=MODULES.map(function(m){
+    var on=Object.prototype.hasOwnProperty.call(prefs,m.id)?prefs[m.id]===true:m.defaultOn;
+    return '<div class="module-row"><div class="module-main"><div class="module-title">'+esc(m.name)+'</div><div class="module-desc">'+esc(m.desc)+'</div></div><div class="module-actions"><span class="badge '+m.kind+'">'+esc(m.status)+'</span><button class="switch" type="button" role="switch" aria-checked="'+(on?'true':'false')+'" aria-label="Toggle '+esc(m.name)+'" data-module="'+esc(m.id)+'"></button></div></div>';
+  }).join("");
+}
+function toggleModule(id){
+  var found=MODULES.some(function(m){return m.id===id;});
+  if(!found)return;
+  var prefs=loadModulePrefs();
+  var currentValue=Object.prototype.hasOwnProperty.call(prefs,id)?prefs[id]===true:false;
+  prefs[id]=!currentValue;
+  if(saveModulePrefs(prefs)){
+    renderModules();
+    var mod=MODULES.filter(function(m){return m.id===id;})[0];
+    toast(mod.name+" preference "+(prefs[id]?"enabled":"disabled")+". In-game effect is not implemented yet.");
+  }
+}
+
 /* ---------- Wiring ---------- */
 
 var navBtns=document.querySelectorAll("[data-view]");
@@ -768,6 +846,11 @@ for(var n=0;n<navBtns.length;n++){
     showView(this.getAttribute("data-view"));
   });
 }
+
+$("moduleList").addEventListener("click",function(ev){
+  var btn=ev.target.closest("button[data-module]");
+  if(btn)toggleModule(btn.getAttribute("data-module"));
+});
 
 $("launchBtn").addEventListener("click",function(){
   toast("Trying to open Minecraft. If nothing happens, Minecraft may not be installed or this browser blocked it.");
@@ -846,6 +929,7 @@ $("clearAll").addEventListener("click",function(){
 });
 
 setGreeting();
+renderModules();
 renderAll();
 
 })();
