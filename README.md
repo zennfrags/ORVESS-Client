@@ -28,3 +28,4 @@ This is a web app/PWA project, not an installable Android APK or a native inject
 The inspector applies limits to archive size, file count and declared uncompressed sizes. These are guardrails, not a complete security audit. Inspect only files you trust.
 
 Not an official Minecraft product. Not approved by or associated with Mojang or Microsoft.
+\n\nAlpha 0.4.1 hotfix: Minecraft launch intent is now invoked immediately from the button tap to avoid Android browser gesture-timeout blocking.\n
